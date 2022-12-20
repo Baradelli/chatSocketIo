@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  socket_id    String
+  name         String
+  avatar       String
+  chat_room_id String?
+  chat_room    ChatRoom? @relation(fields: [chat_room_id], references: [id])
+  Message      Message[]
+
+  @@map("user")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  to_user    User     @relation(fields: [to], references: [id])
+  to         String
+  text       String
+  created_at DateTime @default(now())
+  room_id    String
+
+  @@map("message")
+}
+
+model ChatRoom {
+  id       String @id @default(uuid())
+  users    User[]
+  id_users String
+
+  @@map("chat_room")
+}

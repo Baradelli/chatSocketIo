@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE `message` ADD CONSTRAINT `message_to_fkey` FOREIGN KEY (`to`) REFERENCES `user`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
