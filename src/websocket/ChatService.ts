@@ -51,13 +51,10 @@ io.on('connect', (socket) => {
       room = await createChatRoomService.execute([data.id_user, userLogged.id])
     }
 
-    socket.join(room.id)
-
     const messages = await getMessagesByChatRoomService.execute(room.id)
 
-    console.log(messages)
-
     callback({ room, messages })
+    socket.join(room.id)
   })
 
   socket.on('message', async (data) => {
@@ -76,5 +73,11 @@ io.on('connect', (socket) => {
       message,
       user,
     })
+
+    // io.to().emit('notification', {
+    //   newMessage: true,
+    //   room_id: data.room_id,
+    //   from: user,
+    // })
   })
 })

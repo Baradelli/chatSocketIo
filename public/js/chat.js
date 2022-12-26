@@ -40,7 +40,9 @@ function onLoad() {
   })
 
   socket.on('message', (data) => {
-    addMessage(data)
+    if (data.message.room_id === room_id) {
+      addMessage(data)
+    }
   })
 }
 
@@ -81,13 +83,13 @@ function addUser(user) {
 }
 
 document.getElementById('users_list').addEventListener('click', (e) => {
+  document.getElementById('message_user').innerHTML = ''
+
   if (e.target && e.target.matches('li.user_name_list')) {
     const id_user = e.target.getAttribute('idUser')
 
     socket.emit('start_chat', { id_user }, (response) => {
       room_id = response.room.id
-
-      console.log(response.message)
 
       response.messages.forEach((message) => {
         const data = {
