@@ -4,8 +4,10 @@ import { CreateChatRoomService } from '../services/CreateChatRoomService'
 import { CreateMessageService } from '../services/CreateMessageService'
 import { CreateUserService } from '../services/CreateUserService'
 import { GetAllUsersService } from '../services/GetAllUsersService'
+import { GetChatRoomByIdService } from '../services/GetChatRoomByIdService'
 import { GetChatRoomByUsersService } from '../services/GetChatRoomByUsersService'
 import { GetMessagesByChatRoomService } from '../services/GetMessagesByChatRoomService'
+import { GetUserByIdService } from '../services/GetUserByIdService'
 import { GetUserBySocketIdService } from '../services/GetUserBySocketIdService'
 
 io.on('connect', (socket) => {
@@ -60,6 +62,8 @@ io.on('connect', (socket) => {
   socket.on('message', async (data) => {
     const getUserBySocketIdService = container.resolve(GetUserBySocketIdService)
     const createMessageService = container.resolve(CreateMessageService)
+    const getChatRoomByIdService = container.resolve(GetChatRoomByIdService)
+    const getUserByIdService = container.resolve(GetUserByIdService)
 
     const user = await getUserBySocketIdService.execute(socket.id)
 
@@ -74,10 +78,18 @@ io.on('connect', (socket) => {
       user,
     })
 
-    // io.to().emit('notification', {
-    //   newMessage: true,
-    //   room_id: data.room_id,
-    //   from: user,
-    // })
+    const room = await getChatRoomByIdService.execute(data.room_id)
+
+    const idUserFrom = room.id_users
+      .split(',')
+      .find((id) => String(id) !== String(user.id))
+
+    const userFrom = await getUserByIdService.execute(idUserFrom)
+
+    io.to(userFrom.socket_id).emit('notification', {
+      newMessage: true,
+      room_id: data.room_id,
+      from: user,
+    })
   })
 })

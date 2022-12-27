@@ -12,5 +12,7 @@ export class GetChatRoomByIdService {
         users: true,
       },
     })
+
+    return room
   }
 }

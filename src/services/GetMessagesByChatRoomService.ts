@@ -11,9 +11,10 @@ export class GetMessagesByChatRoomService {
       include: {
         to_user: true,
       },
+      orderBy: {
+        created_at: 'asc',
+      },
     })
-
-    console.log('mensagens ', messages)
 
     return messages
   }
